@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xsi:schemaLocation="http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-4.3.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.3.xsd
+		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.3.xsd">
+
+<context:component-scan base-package="kr.co.jhta.*"></context:component-scan>
+
+<mvc:annotation-driven></mvc:annotation-driven>
+<mvc:default-servlet-handler/>
+<mvc:view-resolvers>
+	<mvc:jsp prefix="/views/" suffix=".jsp"/>
+</mvc:view-resolvers>
+
+<bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+	<property name="driverClassName" value="oracle.jdbc.driver.OracleDriver"/>
+	<property name="url" value="jdbc:oracle:thin:@localhost:1521:orcl"/>
+	<property name="username" value="scott"/>
+	<property name="password" value="tiger"/>
+</bean>
+
+<!-- jpa를 사용하려면 데이터소스 빈을 넣어야 됨 -->
+<bean id="entityManagerFactory" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
+	<property name="dataSource" ref="dataSource"></property>
+	<property name="persistenceXmlLocation" value="/META-INF/persistence.xml"></property><!-- 설정파일 -->
+	<property name="jpaVendorAdapter"><!-- 구현하고 있는 회사 -->
+		<bean class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter"><!-- 그중 하이버네이트 쓰겟다 -->
+			<property name="generateDdl" value="true"></property><!-- ddl이 없으면 생성 !!테이블이 없으면 생성해라 있으면 생성하지말고-->
+		</bean>
+	</property>
+</bean>
+
+<!-- 트랜잭션 관련해서 처리하는거 네임스페이스에서 tx클릭 밑에서 2번쨰 -->
+<bean id="txManager" class="org.springframework.orm.jpa.JpaTransactionManager">
+	<property name="entityManagerFactory" ref="entityManagerFactory"></property>
+</bean>
+
+<!-- 트랜잭션 활성화 트랜잭션 안하면 오류남-->
+<tx:annotation-driven transaction-manager="txManager"/>
+</beans>
