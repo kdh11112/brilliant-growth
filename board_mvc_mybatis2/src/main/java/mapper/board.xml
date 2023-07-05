@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  
+  <mapper namespace="kr.co.jhta.board">
+  
+  	<select id="getTotal" resultType="int">
+  		SELECT 
+  			count(*) cnt
+  		FROM BOARD
+  	</select>
+  
+	<select id="AllSelectBoard" parameterType="se" resultType="bvo">
+		SELECT	
+			RN,
+			BNO,
+			WRITER,
+			TITLE,
+			CONTENTS,
+			REGDATE,
+			HITS,
+			IP,
+			STATUS 
+		FROM(SELECT ROWNUM RN,
+							BNO,
+							WRITER,
+							TITLE,
+							CONTENTS,
+							REGDATE,
+							HITS,
+							IP,
+							STATUS 
+				FROM (SELECT BNO,
+								WRITER,
+								TITLE,
+								CONTENTS,
+								REGDATE,
+								HITS,
+								IP,
+								STATUS 
+						FROM BOARD b ORDER BY BNO DESC) 
+				WHERE ROWNUM &lt;= #{endNo})
+		WHERE RN &gt;= #{startNo}  
+	</select>  
+  
+  </mapper>
