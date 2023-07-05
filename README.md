@@ -1,1 +1,1 @@
-# brilliant-growth
+블로그 관리용
