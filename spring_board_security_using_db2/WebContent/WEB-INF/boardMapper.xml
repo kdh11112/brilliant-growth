@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="kr.co.jhta.board">
+	
+	<select id="selectAll" resultType="bdto" parameterType="kr.co.jhta.web.dto.StartEnd">
+		<![CDATA[
+		SELECT * 
+		from(SELECT rownum rn,
+					bno,
+					writer,
+					title,
+					contents,
+					regdate,
+					hits,
+					ip,
+					status 
+			from(SELECT bno,
+						writer,
+						title,
+						contents,
+						regdate,
+						hits,
+						ip,
+						status
+					FROM board
+					ORDER BY bno DESC) 
+			WHERE rownum <= #{endNo})	
+		WHERE rn >= #{startNo}
+		]]>
+	</select>
+	<!-- to_char(regdate,'yyyy-mm-dd')  -->
+	<select id="totalCount" resultType="int">
+		SELECT count(*) FROM board
+	</select>
+	
+	<update id="raiseHit" parameterType="int">
+		update board
+		set hits = (hits+1)
+		where bno = #{bno}
+	</update>
+
+	<select id="selectOne" parameterType="int" resultType="bdto">
+		SELECT 	bno,
+				writer,
+				title,
+				contents,
+				to_char(regdate,'yyyy-mm-dd') regdate,
+				hits,
+				ip,
+				status
+		FROM board
+		WHERE bno = #{bno}
+	</select>
+	
+	<insert id="insertOne" parameterType="bdto">
+		insert into board values(BOARD_BNO_SEQ.nextval,#{writer},#{title},#{contents},sysdate,0,#{ip},1)
+	</insert>
+	
+	<update id="updatetOne" parameterType="bdto">
+		update board 
+		set title = #{title},contents = #{contents}  
+		where bno = #{bno}
+	</update>
+	
+	<delete id="deleteOne" parameterType="int">
+		delete from board
+		where bno = #{bno}
+	</delete>
+</mapper>
