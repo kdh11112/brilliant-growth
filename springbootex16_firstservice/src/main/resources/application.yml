@@ -1,0 +1,17 @@
+server:
+   port: 0
+#  port: 8081 포트 0번으로 하는 이유는 한곳에만 과부하가 걸리면 안되기때문에 로드밸런싱을 적용하기 위하여 포트번호를 랜덤으로 지정
+
+  
+spring:
+  application:
+    name: my-first-service
+    
+eureka:
+  client:
+    register-with-eureka: true
+    fetch-registry: true
+    service-url:
+      defaultZone: http://localhost:8761/eureka
+  instance:
+    instance-id: ${spring.application.name}:${spring.application.instance_id:${random.value}}

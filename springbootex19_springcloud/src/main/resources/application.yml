@@ -1,0 +1,45 @@
+server:
+  port: 8000
+  
+  
+spring:
+  application:
+    name: apigateway-service
+  cloud:
+    gateway:
+      default-filters:
+      - name: GlobalFilter
+        args:
+          baseMessage: Hello Spring Cloud Global Filter
+          preLogger: true
+          postLogger: true
+    
+      routes:
+      - id: first-service
+        predicates:
+        - Path=/first-service/**
+        uri:
+          lb://MY-FIRST-SERVICE
+#          http://localhost:8081 로드밸런싱을 위하여 포트번호를 지정하면 안됨
+        filters:
+         - CustomFilter
+#        - AddRequestHeader=first-request, first-request-header-from-yml
+#        - AddResponseHeader=first-response, first-response-header-from-yml
+      - id: second-service
+        predicates:
+        - Path=/second-service/**
+        uri:
+          lb://MY-SECOND-SERVICE
+#          http://localhost:8082
+        filters:
+         - CustomFilter
+#        - AddRequestHeader=second-request, second-request-header-from-yml
+#        - AddResponseHeader=second-response, second-response-header-from-yml
+#   여기가다 설정해도 되고 FilterConfig에다가 설정해도 됨
+          
+eureka:
+  client:
+    register-with-eureka: true
+    fetch-registry: true
+    service-url:
+      defaultZone: http://localhost:8761/eureka
